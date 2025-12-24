@@ -1,12 +1,27 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
+import { error } from 'console';
 
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+/*Default environment is DEV if not provided from the terminal*/
+const ENV = process.env.NODE_ENV || 'DEV';
+const envPath = path.resolve(__dirname, 'src/environments', `${ENV}.env`);
+
+/*Throw error if environment file path is incorrect.*/
+if(!fs.existsSync(envPath)){
+  throw new Error(`Environment file is NOT present at: ${envPath}`);
+}
+
+/*Load environment file*/
+dotenv.config({path: envPath});
+
+
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -37,7 +52,11 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: 'http://localhost:3000',
     
+    //Get base URL from the loaded environment file
+    baseURL:process.env.BASE_URL,
+
     actionTimeout: 10000, //10 seconds per click or type action
+
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
