@@ -4,11 +4,6 @@ import path from 'path';
 import fs from 'fs';
 import { error } from 'console';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-
 /*Default environment is DEV if not provided from the terminal*/
 const ENV = process.env.NODE_ENV || 'DEV';
 const envPath = path.resolve(__dirname, 'src/environments', `${ENV}.env`);
@@ -20,8 +15,6 @@ if(!fs.existsSync(envPath)){
 
 /*Load environment file*/
 dotenv.config({path: envPath});
-
-
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -49,9 +42,6 @@ export default defineConfig({
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
-    
     //Get base URL from the loaded environment file
     baseURL:process.env.BASE_URL,
 
