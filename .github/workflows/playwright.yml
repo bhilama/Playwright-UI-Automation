@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chromium, webkit] #This triggers two parallel jobs on two separate VMs
+        browser: [chromium, webkit, api-tests] #This triggers two parallel jobs on two separate VMs
     steps:
     - uses: actions/checkout@v4
     #- uses: actions/setup-node@v4
@@ -23,8 +23,10 @@ jobs:
     - name: Run playwright tests in Docker
       run: |
         docker run \
-          -e appUserName=${{secrets.APP_USER_NAME}} \
-          -e appPassword=${{secrets.APP_USER_PASSWORD}} \
+          -e APP_USER_NAME=${{secrets.APP_USER_NAME}} \
+          -e APP_PASSWORD=${{secrets.APP_USER_PASSWORD}} \
+          -e CLIENT_ID=${{secrets.CLIENT_ID}} \
+          -e CLIENT_SECRET=${{secrets.CLIENT_SECRET}} \
           -v ${{github.workspace}}/playwright-report:/app/playwright-report \
           playwright-tests \
           npx playwright test --project=${{matrix.browser}}

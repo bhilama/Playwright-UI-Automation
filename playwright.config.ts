@@ -15,6 +15,17 @@ if(!fs.existsSync(envPath)){
 
 /*Load environment file*/
 dotenv.config({path: envPath});
+/*
+//Read token from the auth file.
+const getSavedToken = () => {
+  try{
+    const auth = JSON.parse(fs.readFileSync('.auth/user.json', 'utf-8'));
+    return auth.origins[0].localStorage[0].value;
+  }catch (e) {
+    return '';
+  }
+};
+*/
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -53,19 +64,42 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    
     {
       name: 'chromium',
+      testDir: './src/tests/UI',
       use: { ...devices['Desktop Chrome'] },
     },
 
-    {
+   /* {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
-    },
+    },*/
 
     {
       name: 'webkit',
+      testDir: './src/tests/UI',
       use: { ...devices['Desktop Safari'] },
+    },
+    
+
+    { name: 'setup', 
+      testDir: './src/lib/utils', 
+      testMatch: /oauth.setup.ts/ 
+    },
+    
+    {
+      name: 'api-tests',
+      testDir: './src/tests/API',
+      dependencies: ['setup'],
+      use: {
+        baseURL: process.env.API_BASE_URL,
+        storageState: '.auth/user.json',
+        extraHTTPHeaders: {          
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      },
     },
 
     /* Test against mobile viewports. */

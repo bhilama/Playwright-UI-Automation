@@ -6,4 +6,5 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
-/src/environments/*.env
+src/environments/
+.auth/

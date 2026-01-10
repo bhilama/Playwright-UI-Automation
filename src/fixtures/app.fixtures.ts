@@ -18,7 +18,7 @@ export const test = base.extend<authFixture>({
     const homePage = new DashboardPage(page);
 
     await page.goto("/");
-    await loginPage.login(process.env.appUserName!, process.env.appPassword!);
+    await loginPage.login(process.env.APP_USER_NAME!, process.env.APP_PASSWORD!);
     await use(homePage);
   }
 });
