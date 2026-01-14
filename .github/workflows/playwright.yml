@@ -1,11 +1,24 @@
 name: Playwright Parallel Docker Tests
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 jobs:
+  #---Quality Gate Job---
+  lint:
+    name: Linter & Formatter checkout
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: node-version:18
+      - name: Install dependencies
+        run: npm ci
+      - name: Run ESLint check
+        run: npm run lint
   test:
+    needs: lint #<--- Test will not start if Lint job fails.
     timeout-minutes: 60
     runs-on: ubuntu-latest
     strategy:
@@ -13,39 +26,39 @@ jobs:
       matrix:
         browser: [chromium, webkit, api-tests] #This triggers two parallel jobs on two separate VMs
     steps:
-    - uses: actions/checkout@v4
-    #- uses: actions/setup-node@v4
-    #Build docker image for each parallel runner.
-    - name: Build Docker image
-      run: docker build -t playwright-tests .
-    
-    #Run test inside Docker container
-    - name: Run playwright tests in Docker
-      run: |
-        docker run \
-          -e APP_USER_NAME=${{secrets.APP_USER_NAME}} \
-          -e APP_PASSWORD=${{secrets.APP_USER_PASSWORD}} \
-          -e CLIENT_ID=${{secrets.CLIENT_ID}} \
-          -e CLIENT_SECRET=${{secrets.CLIENT_SECRET}} \
-          -v ${{github.workspace}}/playwright-report:/app/playwright-report \
-          playwright-tests \
-          npx playwright test --project=${{matrix.browser}}
+      - uses: actions/checkout@v4
+      #- uses: actions/setup-node@v4
+      #Build docker image for each parallel runner.
+      - name: Build Docker image
+        run: docker build -t playwright-tests .
 
-      
-        #node-version: lts/*
-    #- name: Install dependencies
-      #run: npm ci
-    #- name: Install Playwright Browsers
+      #Run test inside Docker container
+      - name: Run playwright tests in Docker
+        run: |
+          docker run \
+            -e APP_USER_NAME=${{secrets.APP_USER_NAME}} \
+            -e APP_PASSWORD=${{secrets.APP_USER_PASSWORD}} \
+            -e CLIENT_ID=${{secrets.CLIENT_ID}} \
+            -e CLIENT_SECRET=${{secrets.CLIENT_SECRET}} \
+            -v ${{github.workspace}}/playwright-report:/app/playwright-report \
+            playwright-tests \
+            npx playwright test --project=${{matrix.browser}}
+
+
+          #node-version: lts/*
+        #run: npm ci
+      #- name: Install dependencies
+      #- name: Install Playwright Browsers
       #run: npx playwright install --with-deps
-    #- name: Run Playwright tests
+      #- name: Run Playwright tests
       #run: npx playwright test
       #env:
-        #appUserName: ${{secrets.APP_USER_NAME}}
-        #appPassword: ${{secrets.APP_USER_PASSWORD}}
-    #Upload unique reports so they don't overwrite each other
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report-${{ matrix.browser}}
-        path: playwright-report/
-        retention-days: 30
+      #appUserName: ${{secrets.APP_USER_NAME}}
+      #appPassword: ${{secrets.APP_USER_PASSWORD}}
+      #Upload unique reports so they don't overwrite each other
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report-${{ matrix.browser}}
+          path: playwright-report/
+          retention-days: 30
