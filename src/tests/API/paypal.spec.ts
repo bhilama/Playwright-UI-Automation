@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { BuyOrderController } from '../../lib/controllers/BuyOrder.controller';
 import { BuyOrder } from '../../lib/models/BuyOrder.model';
-import ByOrderPayLoadJson from '../../data/API/buyOrder.json';
+import BuyOrderPayLoadJson from '../../data/API/buyOrder.json';
 
 test(`Verify Buy Order payload`, async ({ request }) => {
   const paypal = new BuyOrderController(request);
 
   //Convert json payload to a type BuyOrder
-  const buyOrderPayload: BuyOrder = ByOrderPayLoadJson as BuyOrder;
+  const buyOrderPayload: BuyOrder = BuyOrderPayLoadJson as BuyOrder;
 
   const response = await test.step(`Create Buy order via API`, async () => {
     return await paypal.createOrder(buyOrderPayload);
