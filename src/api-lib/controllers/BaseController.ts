@@ -1,5 +1,5 @@
 import { APIRequestContext, APIResponse } from '@playwright/test';
-import { Logger } from '../utils/logger.utils';
+import { Logger } from '../../utils/logger.utils';
 import fs from 'fs';
 import path from 'path';
 

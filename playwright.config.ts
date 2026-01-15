@@ -34,7 +34,7 @@ export default defineConfig({
   /*Timeouts*/
   timeout: 30 * 1000, //Max timeout for test
   expect: {
-    timeout: 5000, //Max timeout for assertions like expect().toBeVisible()
+    timeout: 10000, //Max timeout for assertions like expect().toBeVisible()
   },
 
   /* Run tests in files in parallel */

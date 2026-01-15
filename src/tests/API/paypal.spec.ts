@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { BuyOrderController } from '../../lib/controllers/BuyOrder.controller';
-import { BuyOrder } from '../../lib/models/BuyOrder.model';
-import BuyOrderPayLoadJson from '../../data/API/buyOrder.json';
+import { BuyOrderController } from '../../api-lib/controllers/BuyOrder.controller';
+import { BuyOrder } from '../../api-lib/models/BuyOrder.model';
+import BuyOrderPayLoadJson from '../../testdata/api/buyOrder.json';
 
 test(`Verify Buy Order payload`, async ({ request }) => {
   const paypal = new BuyOrderController(request);
