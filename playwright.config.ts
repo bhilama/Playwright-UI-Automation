@@ -73,15 +73,15 @@ export default defineConfig({
 
     {
       name: 'webkit',
-      testDir: './src/tests/UI',
+      testDir: './src/tests/ui',
       use: { ...devices['Desktop Safari'] },
     },
 
-    { name: 'setup', testDir: './src/lib/utils', testMatch: /oauth.setup.ts/ },
+    { name: 'setup', testDir: './src/api-lib/authmgr', testMatch: /oauth.setup.ts/ },
 
     {
       name: 'api-tests',
-      testDir: './src/tests/API',
+      testDir: './src/tests/api',
       dependencies: ['setup'],
       use: {
         baseURL: process.env.API_BASE_URL,
