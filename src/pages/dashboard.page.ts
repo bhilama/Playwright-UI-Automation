@@ -9,7 +9,22 @@ export class DashboardPage extends BasePage {
     this.header = page.getByRole('heading', { name: 'Dashboard' });
   }
 
-  get dashboardHeader() {
-    return this.header;
+  //Dynamic Locators:
+  getSubMenuLocator(subMenuText: string): Locator {
+    return this.page.getByRole('link', { name: subMenuText, exact: true });
+  }
+
+  //Page Specific Methods:
+
+  // Verify expected page header is displayed
+  public async expectedPageHeader(pageHeader: string): Promise<boolean> {
+    const actualHeader = await this.getElementText(this.header);
+    return actualHeader === pageHeader;
+  }
+
+  //Click on required sub menu.
+  public async clickOnSubMenu(subMenu: string): Promise<void> {
+    const subMenuLocator = this.getSubMenuLocator(subMenu);
+    await this.clickElement(subMenuLocator);
   }
 }

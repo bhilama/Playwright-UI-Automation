@@ -1,0 +1,13 @@
+[
+  {
+    "scenario": "Create new user",
+    "landingPage": "Dashboard",
+    "subMenu": "PIM",
+    "subMenuHeader": "PIM",
+    "pimSubOptionsEmpList": "Employee List",
+    "pimSubOptionEmpAdd": "Add Employee",
+    "pimOptionHeader": "Employee Information",
+    "firstName": "Test-First-01",
+    "lastName": "Test-Last-01"
+  }
+]

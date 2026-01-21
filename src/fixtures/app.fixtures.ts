@@ -1,10 +1,12 @@
 import { test as base } from '@playwright/test';
 import { LoginPage } from '../pages/login.page';
 import { DashboardPage } from '../pages/dashboard.page';
+import { PimPage } from '../pages/pim.page';
 
 type authFixture = {
   authPage: LoginPage;
   dashboardPage: DashboardPage;
+  pimPage: PimPage;
 };
 
 export const test = base.extend<authFixture>({
@@ -20,6 +22,11 @@ export const test = base.extend<authFixture>({
     await page.goto('/');
     await loginPage.login(process.env.APP_USER_NAME!, process.env.APP_PASSWORD!);
     await use(homePage);
+  },
+
+  pimPage: async ({ dashboardPage }, use) => {
+    const pimSubMenuPage = new PimPage(dashboardPage.getPage());
+    await use(pimSubMenuPage);
   },
 });
 
