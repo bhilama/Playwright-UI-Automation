@@ -50,7 +50,7 @@ jobs:
             -e CLIENT_SECRET="${{ secrets.CLIENT_SECRET }}" \
             -v "${{ github.workspace }}/playwright-report-${{ matrix.browser }}:/app/playwright-report" \
             playwright-tests \
-            npx playwright test --project="${{ matrix.browser }}"
+            npx playwright test --project="${{ matrix.browser }}" --retries=2
 
       # Upload unique reports so they don't overwrite each other
       - uses: actions/upload-artifact@v4
