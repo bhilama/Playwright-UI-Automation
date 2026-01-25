@@ -32,7 +32,7 @@ export default [
     rules: {
       ...typescriptEslint.configs.recommended.rules,
       ...playwright.configs['flat/recommended'].rules,
-      'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
+      'no-console': ['warn', { allow: ['warn', 'error', 'log', 'debug'] }],
       '@typescript-eslint/no-unused-vars': 'error',
       'playwright/no-wait-for-timeout': 'error',
       'no-undef': 'error', // Now this will only error if it's truly unknown
