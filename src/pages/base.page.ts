@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 import { Logger } from '../utils/logger.utils';
 
 export abstract class BasePage {
@@ -113,6 +113,38 @@ export abstract class BasePage {
     } catch (e) {
       Logger.error(`Element is NOT visible.: ${locator}. Error: ${e}`);
       return false;
+    }
+  }
+
+  //Wrapper for expect(locator).toBeVisible() with custom timeout and logging.
+  protected async expectTobeVisible(
+    locator: Locator,
+    options?: { timeout?: number },
+  ): Promise<void> {
+    const timeout = options?.timeout ?? this.customWait;
+    try {
+      Logger.debug(`Expecting locator to be visible.: ${locator} with timeout: ${timeout} ms`);
+      await expect(locator).toBeVisible({ timeout });
+      Logger.debug(`Locator is visible as expected.: ${locator}`);
+    } catch (error) {
+      Logger.error(`Locator visibility check failed.: ${locator}. Error: ${error}`);
+      throw error;
+    }
+  }
+
+  //Wrapper for expect(locator).toBeAttached() with custom timeout and logging.
+  protected async expectTobeAttached(
+    locator: Locator,
+    options?: { timeout?: number },
+  ): Promise<void> {
+    const timeout = options?.timeout ?? this.customWait;
+    try {
+      Logger.debug(`Expecting locator to be attached.: ${locator} with timeout: ${timeout} ms`);
+      await expect(locator).toBeAttached({ timeout });
+      Logger.debug(`Locator is attached as expected.: ${locator}`);
+    } catch (error) {
+      Logger.error(`Locator attachment check failed.: ${locator}. Error: ${error}`);
+      throw error;
     }
   }
 }

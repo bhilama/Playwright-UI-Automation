@@ -47,42 +47,127 @@ export class PimPage extends BasePage {
       .nth(actionPosition);
   }
 
-  //Page Specific Methods:
   public getPimSubMenuLink(subMenuText: string): Locator {
-    return this.page.getByRole('link', { name: subMenuText, exact: true });
+    if (!subMenuText || typeof subMenuText !== 'string' || subMenuText.trim().length === 0) {
+      const errorMsg = `Invalid subMenuText provided.: '${subMenuText}'`;
+      Logger.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    Logger.info(`Getting PIM Sub Menu link for: ${subMenuText}`);
+    const locator = this.page.getByRole('link', { name: subMenuText, exact: true });
+
+    Logger.info(`Locator for PIM Sub Menu '${subMenuText}' created successfully.`);
+    return locator;
   }
+
+  //Page Specific Methods:
 
   // Verify expected page header is displayed
   public async expectedPageHeader(pageHeader: string): Promise<boolean> {
-    const actualHeader = await this.getElementText(this.header);
-    return actualHeader === pageHeader;
+    if (!pageHeader || typeof pageHeader !== 'string' || pageHeader.trim().length === 0) {
+      const errorMsg = `Invalid pageHeader provided.: '${pageHeader}'`;
+      Logger.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    try {
+      Logger.info(`Waiting for page header to be visible.: ${pageHeader}`);
+      await this.expectTobeVisible(this.header);
+
+      const actualHeader = await this.getElementText(this.header);
+      const trimmedActualHeader = actualHeader?.trim() || '';
+      const trimmedExpectedHeader = pageHeader.trim();
+
+      Logger.info(
+        `Actual page header: '${trimmedActualHeader}', Expected page header: '${trimmedExpectedHeader}'`,
+      );
+
+      const isMatch = trimmedActualHeader === trimmedExpectedHeader;
+
+      if (isMatch) {
+        Logger.info(`Page header matches the expected value.`);
+      } else {
+        Logger.warn(`Page header does NOT match the expected value.`);
+      }
+
+      return isMatch;
+    } catch (error) {
+      const errorMsg = `Error while verifying page header. Error: ${error}`;
+      Logger.error(errorMsg);
+      throw new Error(errorMsg);
+    }
   }
 
-  //Search for employee by name and validate that only one record is returned.
+  //Searches for an employee by name in the PIM module and validates if exactly one record is returned.
+
   public async searchEmpByName(
     firstName: string,
     lastName: string,
     pimSubMenu: string,
   ): Promise<boolean> {
-    const fullNmae = `${firstName} ${lastName}`;
-    Logger.info(`Navigating to PIM Sub Menu: ${pimSubMenu}`);
-    const empListLink = this.getPimSubMenuLink(pimSubMenu);
+    if (!firstName || typeof firstName !== 'string' || firstName.trim().length === 0) {
+      const errorMsg = `Invalid firstName provided: ${firstName}`;
+      Logger.error(errorMsg);
+      throw new Error(errorMsg);
+    }
 
-    await this.clickElement(empListLink);
-    await this.typeInElement(this.employeeNameTextBox, fullNmae);
-    await this.clickElement(this.searchButton);
-    Logger.info(`Searching for employee by name: ${fullNmae}`);
-    Logger.info(`Waiting for search results to load after clicking on Search button.`);
-    await expect(this.empListTable).toBeAttached({ timeout: this.customWait });
-    const rowCount = await this.getTableRowCount(this.empRecordRow);
-    Logger.info(`Number of records found for employee '${fullNmae}': ${rowCount}`);
+    if (!lastName || typeof lastName !== 'string' || lastName.trim().length === 0) {
+      const errorMsg = `Invalid lastName provided: ${lastName}`;
+      Logger.error(errorMsg);
+      throw new Error(errorMsg);
+    }
 
-    if (rowCount === 1) {
-      Logger.info(`Employee '${fullNmae}' found in the search results.`);
-      return true;
-    } else {
-      Logger.info(`Employee '${fullNmae}' NOT found in the search results.`);
-      return false;
+    if (!pimSubMenu || typeof pimSubMenu !== 'string' || pimSubMenu.trim().length === 0) {
+      const errorMsg = `Invalid pimSubMenu provided: ${pimSubMenu}`;
+      Logger.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    const fullName = `${firstName.trim()} ${lastName.trim()}`;
+
+    try {
+      //Navigate to PIM Sub Menu.
+      Logger.info(`Navigating to PIM Sub Menu: ${pimSubMenu}`);
+      const empListLink = this.getPimSubMenuLink(pimSubMenu);
+      await this.expectTobeVisible(empListLink);
+      await this.clickElement(empListLink);
+      Logger.info(`Navigated to PIM Sub Menu: ${pimSubMenu} successfully.`);
+
+      //Enter employee name in search box.
+      Logger.info(`Entering employee name in search box: ${fullName}`);
+      await this.expectTobeVisible(this.employeeNameTextBox);
+      await this.typeInElement(this.employeeNameTextBox, fullName);
+      Logger.info(`Employee name entered in search box successfully.`);
+
+      //Click on search button.
+      Logger.info(`Clicking on Search button to search for employee.`);
+      await this.expectTobeVisible(this.searchButton);
+      await this.clickElement(this.searchButton);
+      Logger.info(`Search button clicked successfully.`);
+
+      //Wait for search results to load.
+      Logger.info(`Waiting for search results to load after clicking on Search button.`);
+      await this.expectTobeAttached(this.empListTable);
+      Logger.info(`Employe list table loaded successfully.`);
+
+      //Get the row count from the search results.
+      const rowCount = await this.getTableRowCount(this.empRecordRow);
+      Logger.info(`Number of records found for employee '${fullName}': ${rowCount}`);
+
+      const isFound = rowCount === 1;
+
+      if (isFound) {
+        Logger.info(`Employee '${fullName}' found in the search results.`);
+      } else {
+        Logger.info(`Employee '${fullName}' NOT found in the search results.`);
+      }
+
+      return isFound;
+    } catch (error) {
+      const errorMsg = `Error during employee search for '${fullName}': ${(error as Error).message}`;
+      Logger.error(errorMsg);
+      throw new Error(errorMsg);
     }
   }
 
@@ -110,7 +195,7 @@ export class PimPage extends BasePage {
       await this.clickElement(deleteButton);
 
       Logger.info(`Waiting for delete confirmation popup to be visible.`);
-      await expect(this.deleteConfirmPopup).toBeVisible({ timeout: this.customWait });
+      await this.expectTobeVisible(this.deleteConfirmPopup);
 
       Logger.info(`Clicking on 'Yes, Delete' button to confirm deletion.`);
       await this.clickElement(this.deleteYesButton);
