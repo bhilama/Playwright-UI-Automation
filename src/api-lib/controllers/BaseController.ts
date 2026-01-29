@@ -39,6 +39,53 @@ export class BaseController {
     }
   }
 
+  //Sends a POST request to the specified endpoint with the given payload.
+  async post(endPoint: string, payload: object): Promise<APIResponse> {
+    //Validate input
+    if (!endPoint || typeof endPoint !== 'string' || endPoint.trim().length === 0) {
+      const errorMsg = `Invalid endPoint provided for POST request: '${endPoint}'`;
+      Logger.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      const errorMsg = `Invalid payload provided for POST request: '${JSON.stringify(payload)}'`;
+      Logger.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    Logger.info(`Attempting POST to: ${endPoint} with payload: ${JSON.stringify(payload)}`);
+
+    try {
+      //Retrieve headers with token and send POST request.
+      const headers = this.getHeaders();
+      if (!headers || Object.keys(headers).length === 0) {
+        Logger.warn(`No authorization headers found. Proceeding without headers.`);
+      }
+
+      const response = await this.request.post(endPoint, {
+        data: payload,
+        headers: headers,
+        timeout: 30000, //30 seconds timeout
+      });
+
+      await this.logDetails(endPoint, 'POST', response);
+
+      if (!response.ok()) {
+        const errorMsg = `POST request to ${endPoint} failed with status: ${response.status()} ${response.statusText()}`;
+        Logger.error(errorMsg);
+        throw new Error(errorMsg);
+      }
+
+      return response;
+    } catch (error) {
+      const errorMsg = `Error during POST request to ${endPoint}: ${(error as Error).message}`;
+      Logger.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  /*
   //POST request.
   async post(endPoint: string, payload: object): Promise<APIResponse> {
     //Get complete URL for logging
@@ -52,6 +99,7 @@ export class BaseController {
     await this.logDetails(endPoint, 'POST', response);
     return response;
   }
+  */
 
   //GET request.
   async get(endPoint: string): Promise<APIResponse> {
