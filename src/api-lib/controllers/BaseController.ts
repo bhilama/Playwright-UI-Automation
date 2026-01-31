@@ -85,22 +85,6 @@ export class BaseController {
     }
   }
 
-  /*
-  //POST request.
-  async post(endPoint: string, payload: object): Promise<APIResponse> {
-    //Get complete URL for logging
-    const fullUrlForLog = `${process.env.API_BASE_URL || ''}${endPoint}`;
-    Logger.info(`Attempting POST to: ${fullUrlForLog}`);
-
-    const response = await this.request.post(endPoint, {
-      data: payload,
-      headers: this.getHeaders(),
-    });
-    await this.logDetails(endPoint, 'POST', response);
-    return response;
-  }
-  */
-
   //GET request.
   async get(endPoint: string): Promise<APIResponse> {
     //Get complete URL for logging
