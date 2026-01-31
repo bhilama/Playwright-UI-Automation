@@ -1,5 +1,5 @@
 export interface BuyOrder {
-  intent: 'CAPTURE';
+  intent: string;
   purchase_units: Array<{
     amount: {
       currency_code: string;
