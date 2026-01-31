@@ -60,10 +60,10 @@ export const test = base.extend<authFixture>({
   //Dashboard page fixture with login performed for every test.
   dashboardPage: async ({ page }, use, testInfo) => {
     const userName = process.env.APP_USER_NAME;
-    const password = process.env.App_USER_PASSWORD;
+    const password = process.env.APP_USER_PASSWORD;
 
     if (!userName || !password) {
-      const errorMsg = `APP_USER_NAME or APP_PASSWORD environment variables are not set. Cannot perform login.`;
+      const errorMsg = `APP_USER_NAME or APP_USER_PASSWORD environment variables are not set. Cannot perform login.`;
       Logger.error(errorMsg);
       throw new Error(errorMsg);
     }
