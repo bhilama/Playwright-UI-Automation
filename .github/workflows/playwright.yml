@@ -31,13 +31,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Get Playwright version
+        id: pw-version
+        run: |
+          RAW_VERSION=$(node -p "require('./package.json').devDependencies['@playwright/test']")
+          CLEAN_VERSION=$(echo $RAW_VERSION | tr -d '^~')
+          echo "VERSION=$CLEAN_VERSION" >> $GITHUB_OUTPUT
+
       # Ensure a unique host directory for each matrix run so reports don't overwrite each other
       - name: Prepare report directory
         run: mkdir -p "${{ github.workspace }}/playwright-report-${{ matrix.browser }}"
 
       # Build docker image for each parallel runner.
       - name: Build Docker image
-        run: docker build -t playwright-tests .
+        run: |
+          docker build \
+            --build-arg PW_VERSION=${{ steps.pw-version.outputs.VERSION }} \
+            -t playwright-tests .
 
       # Run tests inside Docker container, writing reports to the host directory
       - name: Run Playwright tests in Docker
