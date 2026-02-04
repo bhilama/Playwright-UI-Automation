@@ -5,6 +5,9 @@ FROM mcr.microsoft.com/playwright:v${PW_VERSION}-noble
 # pwuser is a pre-defined user in the Playwright Docker images
 WORKDIR /app
 
+# This ensures the folders exist and are writable before we switch users
+RUN mkdir -p /app/.npm /app/.npm-global && chown -R pwuser:pwuser /app
+
 # Copy package file and change ownership to pwuser
 COPY --chown=pwuser:pwuser package*.json ./
 
