@@ -1,6 +1,6 @@
 # Argument for version
 ARG PW_VERSION=latest
-From mcr.microsoft.com/playwright:v${PW_VERSION}-noble
+FROM mcr.microsoft.com/playwright:v${PW_VERSION}-noble
 
 # pwuser is a pre-defined user in the Playwright Docker images
 WORKDIR /app
