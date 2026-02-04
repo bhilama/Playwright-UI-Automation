@@ -57,7 +57,7 @@ jobs:
           build-args: |
             PW_VERSION=${{ steps.pw-version.outputs.VERSION }}
           cache-form: type=gha
-          cache-to: type=gha,mode=max          
+          cache-to: type=gha,mode=max
 
       # Run tests inside Docker container, writing reports to the host directory
       - name: Run Playwright tests in Docker
